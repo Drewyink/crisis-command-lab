@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NCA0NCI+PHJlY3Qgd2lkdGg9IjQ0IiBoZWlnaHQ9IjQ0IiByeD0iNCIgZmlsbD0iI0U4NjQxRSIvPjx0ZXh0IHg9IjIyIiB5PSIzMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyY2hpdm8sQXJpYWwsc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjgwMCIgZm9udC1zaXplPSIyMSIgZmlsbD0iIzBCMEIwQiI+RVM8L3RleHQ+PC9zdmc+">
+<title>Instructor control | Arcline Crisis Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='4' fill='%23E8641E'/%3E%3Ctext x='22' y='31' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='20' fill='%230B0B0B'%3EES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#08090B;--panel:#101318;--raise:#161B22;--edge:#242A33;--signal:#E8641E;
+  --alarm:#FF2D2D;--mint:#45E0A8;--amber:#FFC24B;--bone:#ECEAE7;--mute:#79828E;
+  --display:'Archivo',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--data:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--bone);font-family:var(--body);padding:0 0 calc(60px + env(safe-area-inset-bottom));-webkit-text-size-adjust:100%}
+.eyebrow{font-family:var(--data);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+button{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  border:0;border-radius:2px;cursor:pointer;font-size:13px}
+input{background:var(--panel);border:1px solid var(--edge);color:var(--bone);font-family:var(--data);
+  font-size:15px;padding:12px;border-radius:2px}
+input:focus{outline:2px solid var(--signal)}
+
+/* brand lockup, one element per screen, scales by width so it never clips */
+.lockup{display:block;color:var(--bone);line-height:0;max-width:100%}
+.lockup svg{width:clamp(132px,42vw,178px);height:auto;display:block;max-width:100%}
+.lockup.sm svg{width:clamp(108px,24vw,142px)}
+#gate{max-width:380px;margin:16vh auto;padding:0 20px;display:flex;flex-direction:column;gap:14px}
+#gate h1{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.02em;text-transform:uppercase}
+.primary{background:var(--signal);color:#0B0B0B;padding:14px}
+
+#panel{display:none;max-width:1180px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:10;background:rgba(8,9,11,.95);border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;flex-wrap:wrap}
+.ttl{font-family:var(--display);font-weight:800;font-size:16px;text-transform:uppercase}
+.ttl small{display:block;font-family:var(--data);font-weight:400;font-size:9px;letter-spacing:.16em;color:var(--mute)}
+.clock{font-family:var(--data);font-size:30px;font-weight:600;font-variant-numeric:tabular-nums}
+.clock.low{color:var(--alarm)}
+.ctrls{display:flex;gap:6px;flex-wrap:wrap}
+.ghost{background:var(--panel);color:var(--bone);border:1px solid var(--edge);padding:11px 14px}
+.ghost:hover{border-color:var(--signal)}
+.danger{background:#2A0B0B;color:#FF9C9C;border:1px solid #4A1E1E;padding:11px 14px}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--edge);
+  border:1px solid var(--edge);margin:18px 0}
+.stat{background:var(--panel);padding:13px}
+.stat .v{font-family:var(--data);font-size:26px;font-weight:600;margin-top:3px}
+h2{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mute);margin:26px 0 10px}
+.grid{display:grid;grid-template-columns:1.25fr .95fr;gap:26px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+
+.bigred{width:100%;background:var(--alarm);color:#0B0B0B;padding:22px;font-size:20px;letter-spacing:.08em;
+  font-family:var(--display);font-weight:800;margin-bottom:12px}
+.bigred:active{transform:translateY(1px)}
+.bigred small{display:block;font-family:var(--data);font-weight:400;font-size:10px;letter-spacing:.14em;
+  text-transform:none;margin-top:5px;opacity:.75}
+.events{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+.ev{background:var(--panel);border:1px solid var(--edge);border-left:2px solid var(--amber);
+  color:var(--bone);padding:12px;text-align:left;text-transform:none;letter-spacing:0;font-family:var(--body)}
+.ev.s1{border-left-color:var(--alarm)}
+.ev.done{opacity:.42}
+.ev b{display:block;font-family:var(--display);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.03em}
+.ev span{font-family:var(--data);font-size:10px;color:var(--mute)}
+.ev:hover{border-color:var(--signal)}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:var(--data);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);
+  text-align:left;padding:8px 6px;border-bottom:1px solid var(--edge)}
+td{padding:9px 6px;border-bottom:1px solid #171C23;font-variant-numeric:tabular-nums}
+td.name{font-weight:600}
+td.sc{font-family:var(--data);font-size:16px;font-weight:600}
+.off{color:var(--mute)}
+.pill{font-family:var(--data);font-size:10px;padding:2px 6px;border:1px solid var(--edge);color:var(--mute)}
+.pill.open{color:var(--alarm);border-color:#4A1E1E}
+.log{font-family:var(--data);font-size:11px;color:var(--mute);line-height:1.9;max-height:180px;overflow:auto}
+.row2{display:flex;gap:8px;margin-top:10px}
+.row2 input{flex:1}
+a{color:var(--signal)}
+
+.runsheet{font-size:12.5px;line-height:1.75;color:#AEB6C0}
+.runsheet b{color:var(--bone)}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+button,.ghost,.danger,.ev{min-height:46px}
+@media(max-width:700px){
+  #panel{padding:0 14px}
+  header{padding:10px 0;gap:10px}
+  .clock{font-size:26px;order:2}
+  .ctrls{width:100%;order:3}
+  .ctrls button{flex:1 1 calc(50% - 4px)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .events{grid-template-columns:1fr 1fr}
+  .bigred{padding:20px 14px;font-size:17px}
+  table{font-size:12px;min-width:520px}
+  th,td{padding:8px 5px}
+  .row2{flex-wrap:wrap}
+  .row2 input{flex:1 1 100%}
+  .row2 button{flex:1}
+}
+@media(max-width:380px){.events{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div style="margin-bottom:4px"></div>
+  <div class="lockup" id="eslogo"><svg viewBox="0 0 172 46" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Echolink Solutions"><rect x="0" y="3" width="40" height="40" rx="4" fill="var(--signal)"/><text x="20" y="30" text-anchor="middle" font-family="Archivo,system-ui,sans-serif" font-weight="800" font-size="18" letter-spacing="-0.4" fill="#0B0B0B">ES</text><text x="52" y="26" font-family="Archivo,system-ui,sans-serif" font-weight="800" font-size="19" letter-spacing="-0.3" fill="currentColor">ECHOLINK</text><text x="53" y="40" font-family="Archivo,system-ui,sans-serif" font-weight="600" font-size="8.5" letter-spacing="4.6" fill="var(--mute)">SOLUTIONS</text></svg></div>
+  <h1>Instructor control</h1>
+  <p class="eyebrow">Arcline Global 2035 Crisis Command Lab</p>
+  <input id="key" type="password" placeholder="Instructor key" autocomplete="off">
+  <button class="primary" id="go">Open control</button>
+  <p class="eyebrow" id="note">Participants join at the root address of this site.</p>
+</div>
+
+<div id="panel">
+  <header>
+    <div style="display:flex;align-items:center;gap:14px"><span id="hdrslot"></span><div style="display:flex;align-items:center;gap:14px"><span class="ttl">Instructor control<small>Arcline Global 2035</small></span></div></div>
+    <div class="clock" id="clk">60:00</div>
+    <div class="ctrls">
+      <button class="ghost" id="start">Start clock</button>
+      <button class="ghost" id="pause">Pause</button>
+      <button class="ghost" id="reveal">Reveal results</button>
+      <button class="ghost" id="hide">Hide results</button>
+      <button class="danger" id="reset">Reset session</button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><span class="eyebrow">In the field</span><div class="v" id="s1">0</div></div>
+    <div class="stat"><span class="eyebrow">Online now</span><div class="v" id="s2">0</div></div>
+    <div class="stat"><span class="eyebrow">Average standing</span><div class="v" id="s3">0</div></div>
+    <div class="stat"><span class="eyebrow">Open decisions</span><div class="v" id="s4">0</div></div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <h2>Injects</h2>
+      <button class="bigred" id="big">Global disruption<small>Primary AI provider goes offline. 3 minute response window.</small></button>
+      <div class="events" id="events"></div>
+
+      <h2>Message to every screen</h2>
+      <div class="row2">
+        <input id="msg" placeholder="Type a line for the room">
+        <button class="ghost" id="send">Send</button>
+        <button class="ghost" id="clearmsg">Clear</button>
+      </div>
+
+      <h2>Suggested run sheet</h2>
+      <p class="runsheet">
+        <b>00:00</b> Start clock. Set the scene, tell them the seat is theirs.<br>
+        <b>04:00</b> Agent drift. Let them feel the first tradeoff.<br>
+        <b>12:00</b> Supplier collapse, then Schedule slip two minutes later.<br>
+        <b>20:00</b> Stand up and press Global disruption on stage.<br>
+        <b>26:00</b> Cyber incident while the outage is still open.<br>
+        <b>32:00</b> Fleet fault. This is the one they will argue about.<br>
+        <b>38:00</b> Ledger variance and Regulator inquiry together.<br>
+        <b>45:00</b> Short report, Internal leak, Guardrail bypass.<br>
+        <b>52:00</b> Board ultimatum.<br>
+        <b>56:00</b> Live press conference. Then reveal results and debrief.
+      </p>
+    </div>
+
+    <div>
+      <h2>Live standings</h2>
+      <div class="tablewrap"><table id="roster"><thead><tr>
+        <th>CEO</th><th>Score</th><th>Mkt</th><th>Trust</th><th>Reg</th><th>Ops</th><th>Cash</th><th>A</th><th>Open</th>
+      </tr></thead><tbody></tbody></table></div>
+
+      <h2>Session log</h2>
+      <div class="log" id="log"></div>
+
+      <h2>Records</h2>
+      <p class="eyebrow"><a id="csv" href="#">Download results as CSV</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+let ws, KEY='', S=null;
+const $ = id=>document.getElementById(id);
+const mmss = s => Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const fired = new Set();
+
+function connect(){
+  const proto = location.protocol==='https:'?'wss':'ws';
+  ws = new WebSocket(proto+'://'+location.host);
+  ws.onopen = ()=> ws.send(JSON.stringify({t:'join',role:'instructor',key:KEY}));
+  ws.onmessage = e=>{
+    const m = JSON.parse(e.data);
+    if(m.t==='denied'){ $('note').textContent='That key was not accepted. Check INSTRUCTOR_KEY on the server.'; return; }
+    if(m.t!=='state') return;
+    S=m; $('gate').style.display='none'; $('panel').style.display='block';
+    const lg=$('eslogo'); if(lg && lg.parentElement.id!=='hdrslot'){ lg.classList.add('sm'); $('hdrslot').appendChild(lg); } render();
+  };
+  ws.onclose = ()=> setTimeout(connect, 1500);
+}
+const cmd = o => ws && ws.readyState===1 && ws.send(JSON.stringify(o));
+
+function render(){
+  const c=$('clk'); c.textContent = mmss(S.clock); c.classList.toggle('low', S.clock<=300);
+  $('start').textContent = S.running ? 'Clock running' : 'Start clock';
+  $('s1').textContent=S.count; $('s2').textContent=S.onlineCount;
+  $('s3').textContent=S.avgScore; $('s4').textContent=S.openDecisions;
+  $('csv').href = '/export.csv?key='+encodeURIComponent(KEY);
+
+  $('events').innerHTML = S.catalog.filter(e=>e.id!=='PROVIDER_OFFLINE').map(e=>
+    '<button class="ev s'+e.sev+(fired.has(e.id)?' done':'')+'" data-id="'+e.id+'">'+
+    '<b>'+e.button+'</b><span>SEV-'+e.sev+' &middot; '+Math.round(e.seconds/60*10)/10+' min window</span></button>').join('');
+  [...$('events').children].forEach(b=>b.onclick=()=>{
+    cmd({t:'fire',eventId:b.dataset.id}); fired.add(b.dataset.id); b.classList.add('done');
+  });
+
+  $('roster').tBodies[0].innerHTML = S.roster.map(p=>
+    '<tr class="'+(p.online?'':'off')+'"><td class="name">'+esc(p.name)+'</td>'+
+    '<td class="sc">'+p.score+'</td><td>'+p.k.mkt.toFixed(0)+'</td><td>'+Math.round(p.k.trust)+'</td>'+
+    '<td>'+Math.round(p.k.reg)+'</td><td>'+Math.round(p.k.ops)+'</td><td>'+p.k.cash+'</td>'+
+    '<td>L'+p.autonomy+'</td><td><span class="pill'+(p.openCount?' open':'')+'">'+p.openCount+'</span></td></tr>'
+  ).join('') || '<tr><td colspan="9" class="off">Nobody has taken the seat yet.</td></tr>';
+
+  $('log').innerHTML = S.log.map(l=>
+    new Date(l.at).toTimeString().slice(0,8)+'  '+esc(l.text)).join('<br>');
+}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+
+$('go').onclick = ()=>{ KEY=$('key').value.trim(); if(KEY) connect(); };
+$('key').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
+$('big').onclick = ()=>{ cmd({t:'fire',eventId:'PROVIDER_OFFLINE'}); fired.add('PROVIDER_OFFLINE'); };
+$('start').onclick = ()=>cmd({t:'start'});
+$('pause').onclick = ()=>cmd({t:'pause'});
+$('reveal').onclick = ()=>cmd({t:'reveal'});
+$('hide').onclick = ()=>cmd({t:'hide'});
+$('reset').onclick = ()=>{ if(confirm('Reset clears every participant and score. Continue?')){ cmd({t:'reset'}); fired.clear(); } };
+$('send').onclick = ()=>{ if($('msg').value.trim()){ cmd({t:'broadcast',text:$('msg').value.trim()}); $('msg').value=''; } };
+$('clearmsg').onclick = ()=>cmd({t:'clearbroadcast'});
+$('msg').addEventListener('keydown',e=>{if(e.key==='Enter')$('send').click()});
+</script>
+</body>
+</html>
