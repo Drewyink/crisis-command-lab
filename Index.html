@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08090B">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NCA0NCI+PHJlY3Qgd2lkdGg9IjQ0IiBoZWlnaHQ9IjQ0IiByeD0iNCIgZmlsbD0iI0U4NjQxRSIvPjx0ZXh0IHg9IjIyIiB5PSIzMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyY2hpdm8sQXJpYWwsc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjgwMCIgZm9udC1zaXplPSIyMSIgZmlsbD0iIzBCMEIwQiI+RVM8L3RleHQ+PC9zdmc+">
+<title>Arcline Global | Command Deck</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='4' fill='%23E8641E'/%3E%3Ctext x='22' y='31' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='20' fill='%230B0B0B'%3EES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#08090B; --panel:#101318; --raise:#161B22; --edge:#242A33;
+  --signal:#E8641E; --alarm:#FF2D2D; --mint:#45E0A8; --amber:#FFC24B;
+  --bone:#ECEAE7; --mute:#79828E;
+  --display:'Archivo',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --data:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ink);color:var(--bone);font-family:var(--body);-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;padding-bottom:32px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.eyebrow{font-family:var(--data);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+
+/* gate */
+#gate{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;gap:22px;padding:24px}
+#gate h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,11vw,58px);line-height:.92;letter-spacing:-.03em;text-transform:uppercase}
+#gate h1 span{display:block;color:var(--signal)}
+.gate-brief{font-size:14px;line-height:1.55;color:#B9C0C9;max-width:46ch}
+.field{display:flex;flex-direction:column;gap:8px}
+input{background:var(--panel);border:1px solid var(--edge);border-radius:2px;color:var(--bone);
+  font-family:var(--data);font-size:16px;padding:15px 14px;width:100%}
+input:focus{outline:2px solid var(--signal);outline-offset:1px}
+button{font-family:var(--display);font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  border:0;border-radius:2px;cursor:pointer;font-size:14px}
+.primary{background:var(--signal);color:#0B0B0B;padding:16px;width:100%}
+.primary:active{transform:translateY(1px)}
+.rule{height:1px;background:var(--edge)}
+.brandline{display:flex;align-items:center;gap:8px;font-family:var(--data);font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.dot{width:6px;height:6px;background:var(--signal);border-radius:50%}
+
+/* deck */
+#deck{display:none}
+header.bar{position:sticky;top:0;z-index:20;background:rgba(8,9,11,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--edge)}
+.bar-in{max-width:720px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ident{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:-.01em;text-transform:uppercase}
+.ident small{display:block;font-family:var(--data);font-weight:400;font-size:9px;letter-spacing:.18em;color:var(--mute);text-transform:uppercase}
+.clock{font-family:var(--data);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.clock.low{color:var(--alarm)}
+.clock small{display:block;font-size:9px;letter-spacing:.18em;color:var(--mute);text-align:right}
+
+.hero{padding:22px 0 10px;display:flex;align-items:flex-end;gap:16px;justify-content:space-between}
+.scorebox .n{font-family:var(--display);font-weight:800;font-size:clamp(52px,16vw,78px);line-height:.85;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.scorebox .lab{margin-top:6px}
+.trend{font-family:var(--data);font-size:12px;text-align:right;color:var(--mute);line-height:1.7}
+.trend b{color:var(--bone);font-weight:500}
+
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);margin-top:14px}
+.kpi{background:var(--panel);padding:12px 12px 11px}
+.kpi:first-child{grid-column:span 2}
+.kpi .lab{display:flex;justify-content:space-between;align-items:center}
+.kpi .v{font-family:var(--data);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:4px;transition:color .4s}
+.kpi .v.up{color:var(--mint)} .kpi .v.down{color:var(--alarm)}
+.meter{height:3px;background:#1D222A;margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--signal);transition:width .6s ease}
+.meter i.good{background:var(--mint)} .meter i.warn{background:var(--amber)} .meter i.bad{background:var(--alarm)}
+
+section{margin-top:26px}
+h2{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+.lever{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge)}
+.lever button{background:var(--panel);color:var(--mute);padding:11px 4px;font-size:11px;letter-spacing:.06em}
+.lever button.on{background:var(--signal);color:#0B0B0B}
+.lever-note{font-family:var(--data);font-size:11px;color:var(--mute);margin-top:8px;line-height:1.5}
+
+.feed{border-top:1px solid var(--edge)}
+.row{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #171C23;font-size:13px;line-height:1.45}
+.tick{font-family:var(--data);font-size:10px;color:var(--mute);flex:0 0 46px;padding-top:2px}
+.sev1{color:var(--alarm)} .sev2{color:var(--amber)} .sev3{color:var(--mint)}
+
+.broadcast{border-left:2px solid var(--signal);background:var(--raise);padding:13px 14px;font-size:14px;line-height:1.5}
+.broadcast .eyebrow{margin-bottom:5px;color:var(--signal)}
+.queue{font-family:var(--data);font-size:11px;color:var(--amber);margin-top:10px}
+
+/* alarm takeover */
+#alarm{position:fixed;inset:0;z-index:60;background:var(--ink);display:none;flex-direction:column;
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+#alarm.show{display:flex;animation:rise .28s ease-out}
+@keyframes rise{from{transform:translateY(22px);opacity:0}to{transform:none;opacity:1}}
+.alarm-top{position:sticky;top:0;background:var(--alarm);color:#0B0B0B;padding:10px 16px;
+  display:flex;justify-content:space-between;align-items:center}
+.alarm-top.sev2{background:var(--amber)}
+.alarm-top .code{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.alarm-top .cd{font-family:var(--data);font-weight:600;font-size:20px;font-variant-numeric:tabular-nums}
+.drain{height:4px;background:#2A0B0B;position:sticky;top:41px}
+.drain i{display:block;height:100%;background:var(--alarm);transition:width 1s linear}
+.alarm-body{padding:24px 16px 40px;max-width:720px;margin:0 auto;width:100%}
+.alarm-body h3{font-family:var(--display);font-weight:800;font-size:clamp(26px,7.5vw,40px);line-height:1.02;
+  letter-spacing:-.025em;margin:14px 0 14px}
+.alarm-body p.brief{font-size:15px;line-height:1.6;color:#C6CCD4}
+.opts{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--panel);border:1px solid var(--edge);border-left:2px solid var(--signal);
+  padding:15px 14px;text-align:left;width:100%;cursor:pointer;color:var(--bone);
+  font-family:var(--body);text-transform:none;letter-spacing:0}
+.opt strong{display:block;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.01em;margin-bottom:5px}
+.opt span{font-size:13px;color:var(--mute);line-height:1.45}
+.opt:active{background:var(--raise)}
+.pulse{animation:flash .9s ease-out 2}
+@keyframes flash{0%,100%{background:var(--ink)}20%{background:#2A0B0B}}
+
+/* outcome */
+#outcome{position:fixed;inset:0;z-index:70;background:rgba(8,9,11,.97);display:none;
+  align-items:center;justify-content:center;padding:24px}
+#outcome.show{display:flex}
+.out-card{max-width:520px;width:100%}
+.out-card h4{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.02em;margin:10px 0 12px}
+.out-card p{font-size:15px;line-height:1.6;color:#C6CCD4}
+.deltas{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 22px}
+.chip{font-family:var(--data);font-size:11px;padding:5px 8px;border:1px solid var(--edge);color:var(--mute)}
+.chip.up{color:var(--mint);border-color:#1E4A3A} .chip.down{color:var(--alarm);border-color:#4A1E1E}
+
+/* results */
+#results{display:none;padding-top:26px}
+.band{font-family:var(--display);font-weight:800;font-size:clamp(40px,13vw,64px);line-height:.9;
+  letter-spacing:-.03em;text-transform:uppercase;color:var(--signal)}
+.rank{font-family:var(--data);font-size:12px;color:var(--mute);margin-top:10px;letter-spacing:.1em}
+.dlog{margin-top:22px;border-top:1px solid var(--edge)}
+.dlog .item{padding:13px 0;border-bottom:1px solid #171C23}
+.dlog .item .t{font-size:13px;font-weight:600}
+.dlog .item .c{font-family:var(--data);font-size:11px;color:var(--signal);margin:4px 0 5px}
+.dlog .item .f{font-size:12.5px;color:var(--mute);line-height:1.5}
+footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--edge)}
+
+
+/* brand lockup, one element per screen, scales by width so it never clips */
+.lockup{display:block;color:var(--bone);line-height:0;max-width:100%}
+.lockup svg{width:clamp(132px,42vw,178px);height:auto;display:block;max-width:100%}
+.lockup.sm svg{width:clamp(108px,24vw,142px)}
+.gate-brand{margin-bottom:2px}
+.deck-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+
+
+@media (max-width:400px){
+  .bar-in{padding:9px 14px} .clock{font-size:19px} .ident{font-size:13px}
+  .wrap{padding:0 14px} .kpi .v{font-size:22px}
+}
+@media (min-width:760px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .kpi:first-child{grid-column:span 3}
+  .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .opt{display:flex;flex-direction:column}
+}
+.alarm-body{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+#outcome{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.opt,.lever button,.primary{min-height:48px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="gate" class="wrap">
+  <div class="gate-brand"><div class="lockup" id="eslogo"><svg viewBox="0 0 172 46" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Echolink Solutions"><rect x="0" y="3" width="40" height="40" rx="4" fill="var(--signal)"/><text x="20" y="30" text-anchor="middle" font-family="Archivo,system-ui,sans-serif" font-weight="800" font-size="18" letter-spacing="-0.4" fill="#0B0B0B">ES</text><text x="52" y="26" font-family="Archivo,system-ui,sans-serif" font-weight="800" font-size="19" letter-spacing="-0.3" fill="currentColor">ECHOLINK</text><text x="53" y="40" font-family="Archivo,system-ui,sans-serif" font-weight="600" font-size="8.5" letter-spacing="4.6" fill="var(--mute)">SOLUTIONS</text></svg></div><p class="eyebrow" style="margin-top:12px">Crisis Command Lab</p></div>
+  <h1>Arcline<br>Global <span>2035</span></h1>
+  <p class="gate-brief" id="brief">Loading company brief.</p>
+  <div class="rule"></div>
+  <div class="field">
+    <label class="eyebrow" for="nm">Name for the CEO seat</label>
+    <input id="nm" maxlength="28" autocomplete="off" placeholder="Type your name">
+  </div>
+  <button class="primary" id="enter">Take the seat</button>
+  <p class="eyebrow" id="gatenote">60 minutes. Every decision is recorded.</p>
+</div>
+
+<div id="deck">
+  <header class="bar">
+    <div class="bar-in">
+      <div class="ident">Arcline Global<small id="who">Chief executive</small></div>
+      <div class="clock" id="clk">60:00<small>Time left</small></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <div class="scorebox">
+        <div class="n" id="score">72</div>
+        <div class="lab eyebrow">Company standing</div>
+      </div>
+      <div class="trend" id="trend"></div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div id="bcast"></div>
+
+    <section>
+      <h2>Agent autonomy</h2>
+      <div class="lever" id="lever"></div>
+      <p class="lever-note" id="levernote"></p>
+    </section>
+
+    <section>
+      <h2>Incident log</h2>
+      <div class="feed" id="feed"></div>
+      <div class="queue" id="queue"></div>
+    </section>
+
+    <div id="results">
+      <div class="rule"></div>
+      <section>
+        <div class="eyebrow">Final assessment</div>
+        <div class="band" id="band"></div>
+        <p style="margin-top:14px;font-size:15px;line-height:1.6;color:#C6CCD4" id="bandtext"></p>
+        <div class="rank" id="rank"></div>
+        <div class="dlog" id="dlog"></div>
+      </section>
+    </div>
+
+    <footer class="deck-foot"><span class="eyebrow">Echolink Solutions</span><span class="eyebrow">Crisis Command Lab</span></footer>
+  </main>
+</div>
+
+<div id="alarm">
+  <div class="alarm-top" id="atop">
+    <div class="code" id="acode">Critical event</div>
+    <div class="cd" id="acd">3:00</div>
+  </div>
+  <div class="drain"><i id="adrain" style="width:100%"></i></div>
+  <div class="alarm-body">
+    <div class="eyebrow" id="atag">Autonomous systems</div>
+    <p class="eyebrow" id="astat" style="margin-top:6px;color:var(--signal)"></p>
+    <h3 id="atitle"></h3>
+    <p class="brief" id="abody"></p>
+    <div class="opts" id="aopts"></div>
+  </div>
+</div>
+
+<div id="outcome">
+  <div class="out-card">
+    <div class="eyebrow">Consequence</div>
+    <h4 id="ochoice"></h4>
+    <p id="otext"></p>
+    <div class="deltas" id="odeltas"></div>
+    <button class="primary" id="oclose">Back to the deck</button>
+  </div>
+</div>
+
+<script>
+const KPI = [
+  { k:'mkt',   n:'Market index',        max:140, fmt:v=>v.toFixed(1) },
+  { k:'trust', n:'Public trust',        max:100, fmt:v=>Math.round(v)+'%' },
+  { k:'reg',   n:'Regulator confidence',max:100, fmt:v=>Math.round(v)+'%' },
+  { k:'ops',   n:'Operating integrity', max:100, fmt:v=>Math.round(v)+'%' },
+  { k:'cash',  n:'Cash runway',         max:300, fmt:v=>Math.round(v)+'d' }
+];
+let ws, S=null, prev=null, curEvent=null, localDeadline=0, tickTimer=null, seen=new Set();
+
+const $ = id => document.getElementById(id);
+const mmss = s => Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+
+function connect(name){
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(proto+'://'+location.host);
+  ws.onopen = () => ws.send(JSON.stringify({t:'join',role:'participant',name}));
+  ws.onmessage = e => handle(JSON.parse(e.data));
+  ws.onclose = () => setTimeout(()=>connect(name), 1500);
+}
+
+function handle(m){
+  if(m.t === 'resolved'){ showOutcome(m); return; }
+  if(m.t !== 'state') return;
+  prev = S; S = m;
+  $('gate').style.display='none';
+  $('deck').style.display='block';
+  render();
+}
+
+function render(){
+  $('who').textContent = 'Chief executive, '+S.name;
+  const c = $('clk');
+  c.firstChild.nodeValue = mmss(S.clock);
+  c.classList.toggle('low', S.clock <= 300);
+  $('score').textContent = S.score;
+
+  const openN = S.pending.length;
+  $('trend').innerHTML =
+    '<b>'+S.fieldSize+'</b> in the field<br>'+
+    '<b>'+S.decisions.filter(d=>d.optionId!=='none').length+'</b> decisions taken<br>'+
+    (openN? '<span style="color:var(--alarm)"><b style="color:var(--alarm)">'+openN+'</b> open now</span>' : 'No open incidents');
+
+  $('kpis').innerHTML = KPI.map(x=>{
+    const v = S.k[x.k], p = prev ? prev.k[x.k] : v;
+    const dir = v>p ? 'up' : v<p ? 'down' : '';
+    const pct = Math.max(2, Math.min(100, v/x.max*100));
+    const tone = pct>65?'good':pct>35?'warn':'bad';
+    return '<div class="kpi"><div class="lab"><span class="eyebrow">'+x.n+'</span></div>'+
+      '<div class="v '+dir+'">'+x.fmt(v)+'</div>'+
+      '<div class="meter"><i class="'+tone+'" style="width:'+pct+'%"></i></div></div>';
+  }).join('');
+
+  $('lever').innerHTML = S.autonomyLevels.map(a=>
+    '<button class="'+(a.level===S.autonomy?'on':'')+'" data-lvl="'+a.level+'">L'+a.level+'</button>').join('');
+  [...$('lever').children].forEach(b=>b.onclick=()=>ws.send(JSON.stringify({t:'autonomy',level:b.dataset.lvl})));
+  const a = S.autonomyLevels[S.autonomy];
+  $('levernote').textContent = 'Level '+a.level+': '+a.name+'. '+a.note+'. This setting changes how hard AI incidents hit you.';
+
+  $('bcast').innerHTML = S.broadcast
+    ? '<div class="broadcast"><div class="eyebrow">From the board</div>'+esc(S.broadcast.text)+'</div>' : '';
+
+  $('feed').innerHTML = S.feed.map(f=>
+    '<div class="row"><span class="tick sev'+f.sev+'">'+new Date(f.at).toTimeString().slice(0,5)+'</span><span>'+esc(f.text)+'</span></div>'
+  ).join('') || '<div class="row"><span class="tick">--:--</span><span>Quiet. It will not last.</span></div>';
+
+  $('queue').textContent = S.pending.length>1 ? (S.pending.length-1)+' more incidents waiting behind this one' : '';
+
+  if(S.revealed && S.band){
+    $('results').style.display='block';
+    $('band').textContent = S.band.band;
+    $('bandtext').textContent = S.band.text;
+    $('rank').textContent = 'Rank '+S.rank+' of '+S.fieldSize+'  /  Standing '+S.score;
+    $('dlog').innerHTML = S.decisions.map(d=>
+      '<div class="item"><div class="t">'+esc(d.title)+'</div><div class="c">'+esc(d.optionLabel)+
+      ' &middot; '+d.seconds+'s</div><div class="f">'+esc(d.feedback)+'</div></div>').join('');
+  } else $('results').style.display='none';
+
+  const next = S.pending[0];
+  if(next) openAlarm(next); else closeAlarm();
+}
+
+function openAlarm(ev){
+  const fresh = !curEvent || curEvent.id !== ev.id;
+  curEvent = ev;
+  localDeadline = Date.now() + ev.remaining*1000;
+  $('atop').className = 'alarm-top'+(ev.sev===2?' sev2':'');
+  $('acode').textContent = ev.sev===1 ? 'Critical event  SEV-1' : 'Escalation  SEV-2';
+  $('atag').textContent = tagName(ev.tag);
+  $('astat').textContent = 'Standing ' + S.score + '  /  cash ' + Math.round(S.k.cash) + 'd' +
+    (S.pending.length > 1 ? '  /  ' + (S.pending.length - 1) + ' waiting behind this' : '');
+  $('atitle').textContent = ev.title;
+  $('abody').textContent = ev.body;
+  $('aopts').innerHTML = ev.options.map(o=>
+    '<button class="opt" data-o="'+o.id+'"><strong>'+esc(o.label)+'</strong><span>'+esc(o.detail)+'</span></button>').join('');
+  [...$('aopts').children].forEach(b=>b.onclick=()=>{
+    ws.send(JSON.stringify({t:'decide',eventId:ev.id,optionId:b.dataset.o}));
+  });
+  const el = $('alarm');
+  el.classList.add('show');
+  if(fresh && !seen.has(ev.id)){ seen.add(ev.id); el.classList.add('pulse'); buzz();
+    setTimeout(()=>el.classList.remove('pulse'), 2000); el.scrollTop = 0; }
+  if(!tickTimer) tickTimer = setInterval(countdown, 250);
+}
+function countdown(){
+  if(!curEvent) return;
+  const left = Math.max(0, Math.round((localDeadline - Date.now())/1000));
+  $('acd').textContent = mmss(left);
+  $('adrain').style.width = Math.max(0, left/curEvent.window*100)+'%';
+}
+function closeAlarm(){
+  curEvent=null; $('alarm').classList.remove('show');
+  if(tickTimer){ clearInterval(tickTimer); tickTimer=null; }
+}
+function showOutcome(m){
+  const chips = Object.entries(m.d).filter(([,v])=>v).map(([k,v])=>{
+    const name = ({mkt:'Market',trust:'Trust',reg:'Regulator',ops:'Ops',cash:'Cash'})[k];
+    return '<span class="chip '+(v>0?'up':'down')+'">'+name+' '+(v>0?'+':'')+v+'</span>';
+  }).join('');
+  $('ochoice').textContent = m.timedOut ? 'The clock decided for you' : 'Decision recorded';
+  $('otext').textContent = m.feedback;
+  $('odeltas').innerHTML = chips;
+  $('outcome').classList.add('show');
+}
+$('oclose').onclick = ()=> $('outcome').classList.remove('show');
+
+function tagName(t){
+  return ({ai:'Autonomous systems',supply:'Supply chain',cyber:'Security',build:'Capital projects',
+    av:'Autonomous fleet',chain:'Traceability ledger',reg:'Regulatory',market:'Markets and media',
+    board:'Board and public'})[t] || 'Operations';
+}
+function esc(s){ return String(s).replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function buzz(){ if(navigator.vibrate) navigator.vibrate([90,60,90]); }
+
+$('enter').onclick = ()=>{
+  const n = $('nm').value.trim();
+  if(!n){ $('gatenote').textContent = 'Enter a name first. The seat needs an accountable human.'; return; }
+  sessionStorage.setItem('arcline_name', n);
+  connect(n);
+};
+$('nm').addEventListener('keydown', e=>{ if(e.key==='Enter') $('enter').click(); });
+
+$('brief').textContent = 'Arcline Global runs autonomous freight, modular construction, and agentic operations for health systems across 41 countries. Ninety one percent of routine decisions are made by AI agents with no human in the loop. You took the CEO seat nine days ago. Today it all arrives at once.';
+const saved = sessionStorage.getItem('arcline_name');
+if(saved){ $('nm').value = saved; }
+</script>
+</body>
+</html>
