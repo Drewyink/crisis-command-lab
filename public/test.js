@@ -1,0 +1,36 @@
+const WebSocket = require('ws');
+const H='ws://localhost:3000';
+function open(){return new Promise(r=>{const w=new WebSocket(H);w.on('open',()=>r(w));});}
+(async()=>{
+  const inst=await open(), p1=await open(), p2=await open();
+  const states={};
+  inst.on('message',m=>{const d=JSON.parse(m); if(d.t==='state')states.inst=d; if(d.t==='denied')console.log('DENIED');});
+  p1.on('message',m=>{const d=JSON.parse(m); if(d.t==='state')states.p1=d; if(d.t==='resolved')console.log('p1 resolved ->',d.feedback.slice(0,50));});
+  p2.on('message',m=>{const d=JSON.parse(m); if(d.t==='state')states.p2=d;});
+  inst.send(JSON.stringify({t:'join',role:'instructor',key:'echolink2035'}));
+  p1.send(JSON.stringify({t:'join',role:'participant',name:'Drew'}));
+  p2.send(JSON.stringify({t:'join',role:'participant',name:'Virginia'}));
+  await new Promise(r=>setTimeout(r,400));
+  inst.send(JSON.stringify({t:'start'}));
+  inst.send(JSON.stringify({t:'fire',eventId:'PROVIDER_OFFLINE'}));
+  await new Promise(r=>setTimeout(r,600));
+  console.log('p1 pending:', states.p1.pending.map(e=>e.id+'@'+e.remaining+'s'));
+  console.log('p1 start k:', JSON.stringify(states.p1.k), 'score', states.p1.score);
+  p1.send(JSON.stringify({t:'autonomy',level:3}));
+  await new Promise(r=>setTimeout(r,300));
+  p1.send(JSON.stringify({t:'decide',eventId:'PROVIDER_OFFLINE',optionId:'c'}));
+  p2.send(JSON.stringify({t:'decide',eventId:'PROVIDER_OFFLINE',optionId:'a'}));
+  inst.send(JSON.stringify({t:'fire',eventId:'CYBER'}));
+  inst.send(JSON.stringify({t:'broadcast',text:'The board is watching.'}));
+  await new Promise(r=>setTimeout(r,800));
+  console.log('p1 after bad call:', JSON.stringify(states.p1.k), 'score', states.p1.score);
+  console.log('p2 after good call:', JSON.stringify(states.p2.k), 'score', states.p2.score);
+  console.log('roster:', JSON.stringify(states.inst.roster.map(r=>[r.name,r.score,r.openCount])));
+  console.log('broadcast on p2:', states.p2.broadcast && states.p2.broadcast.text);
+  inst.send(JSON.stringify({t:'reveal'}));
+  await new Promise(r=>setTimeout(r,500));
+  console.log('p1 band:', states.p1.band && states.p1.band.band, 'rank', states.p1.rank);
+  const csv=await fetch('http://localhost:3000/export.csv?key=echolink2035').then(r=>r.text());
+  console.log('CSV:\n'+csv);
+  process.exit(0);
+})();
