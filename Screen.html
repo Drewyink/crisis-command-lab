@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NCA0NCI+PHJlY3Qgd2lkdGg9IjQ0IiBoZWlnaHQ9IjQ0IiByeD0iNCIgZmlsbD0iI0U4NjQxRSIvPjx0ZXh0IHg9IjIyIiB5PSIzMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyY2hpdm8sQXJpYWwsc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjgwMCIgZm9udC1zaXplPSIyMSIgZmlsbD0iIzBCMEIwQiI+RVM8L3RleHQ+PC9zdmc+">
+<title>Stage screen | Arcline Crisis Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#08090B;--panel:#101318;--edge:#242A33;--signal:#E8641E;--alarm:#FF2D2D;
+  --mint:#45E0A8;--amber:#FFC24B;--bone:#ECEAE7;--mute:#79828E;
+  --display:'Archivo',sans-serif;--body:'Inter',sans-serif;--data:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--bone);font-family:var(--body);height:100vh;overflow:hidden;padding:3vh 3vw}
+.eyebrow{font-family:var(--data);font-size:clamp(10px,.9vw,14px);letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+/* brand lockup, one element per screen, scales by width so it never clips */
+.lockup{display:block;color:var(--bone);line-height:0;max-width:100%}
+.lockup svg{width:clamp(150px,15vw,260px);height:auto;display:block;max-width:100%}
+.lockup.sm svg{width:clamp(108px,24vw,142px)}
+#gate{display:flex;flex-direction:column;gap:14px;max-width:340px;margin:20vh auto}
+input{background:var(--panel);border:1px solid var(--edge);color:var(--bone);font-family:var(--data);padding:12px;font-size:15px}
+button{background:var(--signal);color:#0B0B0B;border:0;padding:13px;font-family:var(--display);font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;cursor:pointer}
+#stage{display:none;height:100%;grid-template-rows:auto 1fr auto;gap:3vh}
+.top{display:flex;justify-content:space-between;align-items:flex-start}
+.brand{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,38px);text-transform:uppercase;letter-spacing:-.02em}
+.brand span{color:var(--signal)}
+.clock{font-family:var(--data);font-weight:600;font-size:clamp(44px,7vw,110px);line-height:.9;font-variant-numeric:tabular-nums}
+.clock.low{color:var(--alarm)}
+.mid{display:grid;grid-template-columns:1.1fr 1fr;gap:3vw;min-height:0}
+.avg{font-family:var(--display);font-weight:800;font-size:clamp(80px,16vw,240px);line-height:.8;letter-spacing:-.04em}
+.wave{display:flex;flex-wrap:wrap;gap:.7vw;margin-top:2.5vh;align-content:flex-start;overflow:hidden}
+.pip{width:clamp(14px,1.6vw,26px);height:clamp(14px,1.6vw,26px);background:#1C222A;border-radius:50%;transition:background .4s}
+.pip.decided{background:var(--mint)} .pip.waiting{background:var(--alarm)}
+.board{border-left:1px solid var(--edge);padding-left:3vw;min-width:0}
+.lead{display:flex;justify-content:space-between;gap:12px;padding:1.1vh 0;border-bottom:1px solid #171C23;
+  font-size:clamp(14px,1.5vw,26px);font-weight:600}
+.lead b{font-family:var(--data);font-weight:600;color:var(--signal)}
+.lead span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bottom{border-top:1px solid var(--edge);padding-top:1.6vh;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.msg{font-size:clamp(14px,1.6vw,26px);font-weight:500}
+.msg em{font-style:normal;color:var(--signal)}
+@media(max-width:900px),(orientation:portrait){
+  body{height:auto;min-height:100vh;overflow:auto;padding:3vh 5vw calc(3vh + env(safe-area-inset-bottom))}
+  #stage{height:auto;gap:3vh}
+  .top{flex-direction:column;align-items:flex-start;gap:2vh}
+  .top>div:last-child{text-align:left!important}
+  .clock{font-size:clamp(46px,15vw,96px)}
+  .mid{grid-template-columns:1fr;gap:3vh}
+  .board{border-left:0;border-top:1px solid var(--edge);padding-left:0;padding-top:2.4vh}
+  .avg{font-size:clamp(72px,26vw,160px)}
+  .bottom{flex-direction:column;align-items:flex-start;gap:1.4vh}
+  .wave{gap:2.2vw}
+  .pip{width:clamp(16px,5vw,26px);height:clamp(16px,5vw,26px)}
+}
+
+</style>
+</head>
+<body>
+<div id="gate">
+    <div class="lockup" id="eslogo"><svg viewBox="0 0 172 46" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Echolink Solutions"><rect x="0" y="3" width="40" height="40" rx="4" fill="var(--signal)"/><text x="20" y="30" text-anchor="middle" font-family="Archivo,system-ui,sans-serif" font-weight="800" font-size="18" letter-spacing="-0.4" fill="#0B0B0B">ES</text><text x="52" y="26" font-family="Archivo,system-ui,sans-serif" font-weight="800" font-size="19" letter-spacing="-0.3" fill="currentColor">ECHOLINK</text><text x="53" y="40" font-family="Archivo,system-ui,sans-serif" font-weight="600" font-size="8.5" letter-spacing="4.6" fill="var(--mute)">SOLUTIONS</text></svg></div>
+  <p class="eyebrow">Stage screen</p>
+  <input id="key" type="password" placeholder="Instructor key">
+  <button id="go">Open screen</button>
+</div>
+
+<div id="stage">
+  <div class="top">
+    <div>
+      <div id="hdrslot" style="margin-bottom:1.2vh"></div>
+      <div class="brand">Arcline <span>Global</span></div>
+      <div class="stage-brand"><span class="eyebrow">Crisis Command Lab</span></div>
+    </div>
+    <div style="text-align:right">
+      <div class="clock" id="clk">60:00</div>
+      <p class="eyebrow">Time left in the day</p>
+    </div>
+  </div>
+
+  <div class="mid">
+    <div>
+      <p class="eyebrow">Average company standing</p>
+      <div class="avg" id="avg">0</div>
+      <p class="eyebrow" style="margin-top:2.4vh" id="wavelab">The room</p>
+      <div class="wave" id="wave"></div>
+    </div>
+    <div class="board">
+      <p class="eyebrow">Standings</p>
+      <div id="lead" style="margin-top:1.4vh"></div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="msg" id="msg"><em>Every decision is recorded.</em></div>
+    <div class="eyebrow" id="counts"></div>
+  </div>
+</div>
+
+<script>
+let ws, KEY='';
+const $=id=>document.getElementById(id);
+const mmss=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+function connect(){
+  const proto=location.protocol==='https:'?'wss':'ws';
+  ws=new WebSocket(proto+'://'+location.host);
+  ws.onopen=()=>ws.send(JSON.stringify({t:'join',role:'screen',key:KEY}));
+  ws.onmessage=e=>{const m=JSON.parse(e.data); if(m.t!=='state')return; draw(m);};
+  ws.onclose=()=>setTimeout(connect,1500);
+}
+function draw(S){
+  $('gate').style.display='none'; $('stage').style.display='grid';
+  const lg=$('eslogo'); if(lg && lg.parentElement.id!=='hdrslot') $('hdrslot').appendChild(lg);
+  const c=$('clk'); c.textContent=mmss(S.clock); c.classList.toggle('low',S.clock<=300);
+  $('avg').textContent=S.avgScore;
+  $('wave').innerHTML=S.roster.map(p=>
+    '<div class="pip '+(p.openCount?'waiting':(p.online?'decided':''))+'" title="'+p.name+'"></div>').join('');
+  $('wavelab').textContent = S.openDecisions
+    ? S.openDecisions+' decisions still open in the room'
+    : S.count+' executives, no open incidents';
+  $('lead').innerHTML=S.roster.slice(0,8).map((p,i)=>
+    '<div class="lead"><span>'+(i+1)+'. '+esc(p.name)+'</span><b>'+p.score+'</b></div>').join('')
+    || '<p class="eyebrow">Waiting for the room to take their seats</p>';
+  $('msg').innerHTML = S.broadcast ? '<em>Board:</em> '+esc(S.broadcast.text)
+    : (S.revealed ? '<em>Results are live on your screen.</em>' : '<em>Every decision is recorded.</em>');
+  $('counts').textContent=S.onlineCount+' online / '+S.count+' seated';
+}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+$('go').onclick=()=>{KEY=$('key').value.trim(); if(KEY) connect();};
+$('key').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
+const q=new URLSearchParams(location.search).get('key');
+if(q){KEY=q;connect();}
+</script>
+</body>
+</html>
