@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08090B">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NCA0NCI+PHJlY3Qgd2lkdGg9IjQ0IiBoZWlnaHQ9IjQ0IiByeD0iNCIgZmlsbD0iI0U4NjQxRSIvPjx0ZXh0IHg9IjIyIiB5PSIzMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyY2hpdm8sQXJpYWwsc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjgwMCIgZm9udC1zaXplPSIyMSIgZmlsbD0iIzBCMEIwQiI+RVM8L3RleHQ+PC9zdmc+">
+<title>Arcline Global 2035 | Crisis Command Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='4' fill='%23E8641E'/%3E%3Ctext x='22' y='31' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='20' fill='%230B0B0B'%3EES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --ink:#08090B; --panel:#101318; --raise:#161B22; --edge:#242A33;
+  --signal:#E8641E; --alarm:#FF2D2D; --mint:#45E0A8; --amber:#FFC24B;
+  --bone:#ECEAE7; --mute:#79828E;
+  --display:'Archivo',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --data:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ink);color:var(--bone);font-family:var(--body);-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;padding-bottom:32px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.eyebrow{font-family:var(--data);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+
+/* gate */
+#gate{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;gap:22px;padding:24px}
+#gate h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,11vw,58px);line-height:.92;letter-spacing:-.03em;text-transform:uppercase}
+#gate h1 span{display:block;color:var(--signal)}
+.gate-brief{font-size:14px;line-height:1.55;color:#B9C0C9;max-width:46ch}
+.field{display:flex;flex-direction:column;gap:8px}
+input{background:var(--panel);border:1px solid var(--edge);border-radius:2px;color:var(--bone);
+  font-family:var(--data);font-size:16px;padding:15px 14px;width:100%}
+input:focus{outline:2px solid var(--signal);outline-offset:1px}
+button{font-family:var(--display);font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  border:0;border-radius:2px;cursor:pointer;font-size:14px}
+.primary{background:var(--signal);color:#0B0B0B;padding:16px;width:100%}
+.primary:active{transform:translateY(1px)}
+.rule{height:1px;background:var(--edge)}
+.brandline{display:flex;align-items:center;gap:8px;font-family:var(--data);font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.dot{width:6px;height:6px;background:var(--signal);border-radius:50%}
+
+/* deck */
+#deck{display:none}
+header.bar{position:sticky;top:0;z-index:20;background:rgba(8,9,11,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--edge)}
+.bar-in{max-width:720px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ident{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:-.01em;text-transform:uppercase}
+.ident small{display:block;font-family:var(--data);font-weight:400;font-size:9px;letter-spacing:.18em;color:var(--mute);text-transform:uppercase}
+.clock{font-family:var(--data);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.clock.low{color:var(--alarm)}
+.clock small{display:block;font-size:9px;letter-spacing:.18em;color:var(--mute);text-align:right}
+
+.hero{padding:22px 0 10px;display:flex;align-items:flex-end;gap:16px;justify-content:space-between}
+.scorebox .n{font-family:var(--display);font-weight:800;font-size:clamp(52px,16vw,78px);line-height:.85;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.scorebox .lab{margin-top:6px}
+.trend{font-family:var(--data);font-size:12px;text-align:right;color:var(--mute);line-height:1.7}
+.trend b{color:var(--bone);font-weight:500}
+
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);margin-top:14px}
+.kpi{background:var(--panel);padding:12px 12px 11px}
+.kpi:first-child{grid-column:span 2}
+.kpi .lab{display:flex;justify-content:space-between;align-items:center}
+.kpi .v{font-family:var(--data);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:4px;transition:color .4s}
+.kpi .v.up{color:var(--mint)} .kpi .v.down{color:var(--alarm)}
+.meter{height:3px;background:#1D222A;margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--signal);transition:width .6s ease}
+.meter i.good{background:var(--mint)} .meter i.warn{background:var(--amber)} .meter i.bad{background:var(--alarm)}
+
+section{margin-top:26px}
+h2{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+.lever{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge)}
+.lever button{background:var(--panel);color:var(--mute);padding:11px 4px;font-size:11px;letter-spacing:.06em}
+.lever button.on{background:var(--signal);color:#0B0B0B}
+.lever-note{font-family:var(--data);font-size:11px;color:var(--mute);margin-top:8px;line-height:1.5}
+
+.feed{border-top:1px solid var(--edge)}
+.row{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #171C23;font-size:13px;line-height:1.45}
+.tick{font-family:var(--data);font-size:10px;color:var(--mute);flex:0 0 46px;padding-top:2px}
+.sev1{color:var(--alarm)} .sev2{color:var(--amber)} .sev3{color:var(--mint)}
+
+.broadcast{border-left:2px solid var(--signal);background:var(--raise);padding:13px 14px;font-size:14px;line-height:1.5}
+.broadcast .eyebrow{margin-bottom:5px;color:var(--signal)}
+.queue{font-family:var(--data);font-size:11px;color:var(--amber);margin-top:10px}
+
+/* alarm takeover */
+#alarm{position:fixed;inset:0;z-index:60;background:var(--ink);display:none;flex-direction:column;
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+#alarm.show{display:flex;animation:rise .28s ease-out}
+@keyframes rise{from{transform:translateY(22px);opacity:0}to{transform:none;opacity:1}}
+.alarm-top{position:sticky;top:0;background:var(--alarm);color:#0B0B0B;padding:10px 16px;
+  display:flex;justify-content:space-between;align-items:center}
+.alarm-top.sev2{background:var(--amber)}
+.alarm-top .code{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.alarm-top .cd{font-family:var(--data);font-weight:600;font-size:20px;font-variant-numeric:tabular-nums}
+.drain{height:4px;background:#2A0B0B;position:sticky;top:41px}
+.drain i{display:block;height:100%;background:var(--alarm);transition:width 1s linear}
+.alarm-body{padding:24px 16px 40px;max-width:720px;margin:0 auto;width:100%}
+.alarm-body h3{font-family:var(--display);font-weight:800;font-size:clamp(26px,7.5vw,40px);line-height:1.02;
+  letter-spacing:-.025em;margin:14px 0 14px}
+.alarm-body p.brief{font-size:15px;line-height:1.6;color:#C6CCD4}
+.opts{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--panel);border:1px solid var(--edge);border-left:2px solid var(--signal);
+  padding:15px 14px;text-align:left;width:100%;cursor:pointer;color:var(--bone);
+  font-family:var(--body);text-transform:none;letter-spacing:0}
+.opt strong{display:block;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.01em;margin-bottom:5px}
+.opt span{font-size:13px;color:var(--mute);line-height:1.45}
+.opt:active{background:var(--raise)}
+.pulse{animation:flash .9s ease-out 2}
+@keyframes flash{0%,100%{background:var(--ink)}20%{background:#2A0B0B}}
+
+/* outcome */
+#outcome{position:fixed;inset:0;z-index:70;background:rgba(8,9,11,.97);display:none;
+  align-items:center;justify-content:center;padding:24px}
+#outcome.show{display:flex}
+.out-card{max-width:520px;width:100%}
+.out-card h4{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.02em;margin:10px 0 12px}
+.out-card p{font-size:15px;line-height:1.6;color:#C6CCD4}
+.deltas{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 22px}
+.chip{font-family:var(--data);font-size:11px;padding:5px 8px;border:1px solid var(--edge);color:var(--mute)}
+.chip.up{color:var(--mint);border-color:#1E4A3A} .chip.down{color:var(--alarm);border-color:#4A1E1E}
+
+/* results */
+#results{display:none;padding-top:26px}
+.band{font-family:var(--display);font-weight:800;font-size:clamp(40px,13vw,64px);line-height:.9;
+  letter-spacing:-.03em;text-transform:uppercase;color:var(--signal)}
+.rank{font-family:var(--data);font-size:12px;color:var(--mute);margin-top:10px;letter-spacing:.1em}
+.dlog{margin-top:22px;border-top:1px solid var(--edge)}
+.dlog .item{padding:13px 0;border-bottom:1px solid #171C23}
+.dlog .item .t{font-size:13px;font-weight:600}
+.dlog .item .c{font-family:var(--data);font-size:11px;color:var(--signal);margin:4px 0 5px}
+.dlog .item .f{font-size:12.5px;color:var(--mute);line-height:1.5}
+footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--edge)}
+
+
+/* brand lockup, one element per screen, scales by width so it never clips */
+.lockup{display:block;color:var(--bone);line-height:0;max-width:100%}
+.lockup svg{width:clamp(132px,42vw,178px);height:auto;display:block;max-width:100%}
+.lockup.sm svg{width:clamp(108px,24vw,142px)}
+.gate-brand{margin-bottom:2px}
+.deck-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+
+
+@media (max-width:400px){
+  .bar-in{padding:9px 14px} .clock{font-size:19px} .ident{font-size:13px}
+  .wrap{padding:0 14px} .kpi .v{font-size:22px}
+}
+@media (min-width:760px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .kpi:first-child{grid-column:span 3}
+  .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .opt{display:flex;flex-direction:column}
+}
+.alarm-body{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+#outcome{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.opt,.lever button,.primary{min-height:48px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* solo additions */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--edge);border:1px solid var(--edge)}
+.modes button{background:var(--panel);color:var(--mute);padding:14px 8px;font-size:12px;text-align:center}
+.modes button.on{background:var(--signal);color:#0B0B0B}
+.modes button small{display:block;font-family:var(--data);font-weight:400;font-size:9.5px;letter-spacing:.1em;text-transform:none;margin-top:4px;opacity:.8}
+#fabs{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));right:16px;z-index:50;display:flex;gap:8px}
+.fab{background:var(--raise);border:1px solid var(--edge);color:var(--bone);padding:12px 14px;font-size:11px;min-height:44px}
+.fab.live{border-color:var(--signal);color:var(--signal)}
+#drawer{position:fixed;inset:auto 0 0 0;z-index:55;background:var(--panel);border-top:1px solid var(--signal);
+  max-height:78vh;overflow-y:auto;padding:18px 16px calc(26px + env(safe-area-inset-bottom));display:none}
+#drawer.show{display:block}
+.dr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.injects{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px}
+@media(max-width:400px){.injects{grid-template-columns:1fr 1fr}}
+.inj{background:var(--ink);border:1px solid var(--edge);border-left:2px solid var(--amber);color:var(--bone);
+  padding:10px;text-align:left;font-family:var(--body);text-transform:none;letter-spacing:0;font-size:13px;font-weight:600}
+.inj.s1{border-left-color:var(--alarm)}
+.inj.done{opacity:.4}
+.dr-row{display:flex;gap:7px;margin:14px 0 4px;flex-wrap:wrap}
+.dr-row .fab{flex:1;min-width:96px;text-align:center}
+
+
+/* brand lockup, one element per screen, scales by width so it never clips */
+.lockup{display:block;color:var(--bone);line-height:0;max-width:100%}
+.lockup svg{width:clamp(132px,42vw,178px);height:auto;display:block;max-width:100%}
+.lockup.sm svg{width:clamp(108px,24vw,142px)}
+.gate-brand{margin-bottom:2px}
+.deck-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<div id="gate" class="wrap">
+  <div class="gate-brand"><div class="lockup" id="eslogo"><svg viewBox="0 0 172 46" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Echolink Solutions"><rect x="0" y="3" width="40" height="40" rx="4" fill="var(--signal)"/><text x="20" y="30" text-anchor="middle" font-family="Archivo,system-ui,sans-serif" font-weight="800" font-size="18" letter-spacing="-0.4" fill="#0B0B0B">ES</text><text x="52" y="26" font-family="Archivo,system-ui,sans-serif" font-weight="800" font-size="19" letter-spacing="-0.3" fill="currentColor">ECHOLINK</text><text x="53" y="40" font-family="Archivo,system-ui,sans-serif" font-weight="600" font-size="8.5" letter-spacing="4.6" fill="var(--mute)">SOLUTIONS</text></svg></div><p class="eyebrow" style="margin-top:12px">Crisis Command Lab</p></div>
+  <h1>Arcline<br>Global <span>2035</span></h1>
+  <p class="gate-brief" id="brief"></p>
+  <div class="rule"></div>
+  <div class="field">
+    <label class="eyebrow" for="nm">Name for the CEO seat</label>
+    <input id="nm" maxlength="28" autocomplete="off" placeholder="Type your name">
+  </div>
+  <div class="field">
+    <span class="eyebrow">Length of the day</span>
+    <div class="modes" id="modes">
+      <button data-min="60" class="on">Full day<small>60 minutes, 13 injects</small></button>
+      <button data-min="20">Express<small>20 minutes, same injects</small></button>
+    </div>
+  </div>
+  <button class="primary" id="enter">Take the seat</button>
+  <p class="eyebrow" id="gatenote">Injects arrive on their own. Open the facilitator panel any time to fire your own.</p>
+</div>
+
+<div id="deck">
+  <header class="bar">
+    <div class="bar-in">
+      <div class="ident">Arcline Global<small id="who">Chief executive</small></div>
+      <div class="clock" id="clk">60:00<small>Time left</small></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="hero">
+      <div class="scorebox">
+        <div class="n" id="score">73</div>
+        <div class="lab eyebrow">Company standing</div>
+      </div>
+      <div class="trend" id="trend"></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div id="bcast"></div>
+    <section>
+      <h2>Agent autonomy</h2>
+      <div class="lever" id="lever"></div>
+      <p class="lever-note" id="levernote"></p>
+    </section>
+    <section>
+      <h2>Incident log</h2>
+      <div class="feed" id="feed"></div>
+      <div class="queue" id="queue"></div>
+    </section>
+    <div id="results">
+      <div class="rule"></div>
+      <section>
+        <div class="eyebrow">Final assessment</div>
+        <div class="band" id="band"></div>
+        <p style="margin-top:14px;font-size:15px;line-height:1.6;color:#C6CCD4" id="bandtext"></p>
+        <div class="rank" id="rank"></div>
+        <div class="dlog" id="dlog"></div>
+      </section>
+    </div>
+    <footer class="deck-foot"><span class="eyebrow">Echolink Solutions</span><span class="eyebrow">Crisis Command Lab</span></footer>
+  </main>
+</div>
+
+<div id="fabs">
+  <button class="fab" id="openDrawer">Facilitator</button>
+</div>
+
+<div id="drawer">
+  <div class="dr-head">
+    <div>
+      <div class="eyebrow">Facilitator panel</div>
+      <div class="ident" style="font-size:13px" id="drclock">60:00 on the clock</div>
+    </div>
+    <button class="fab" id="closeDrawer">Close</button>
+  </div>
+  <div class="injects" id="injects"></div>
+  <div class="dr-row">
+    <button class="fab" id="toggleRun">Pause clock</button>
+    <button class="fab" id="toggleAuto">Auto injects on</button>
+    <button class="fab" id="revealBtn">Reveal results</button>
+    <button class="fab" id="restartBtn">Restart day</button>
+  </div>
+  <p class="lever-note">Firing an inject while another is still open is the point. Standing drains while incidents sit unresolved.</p>
+</div>
+
+<div id="alarm">
+  <div class="alarm-top" id="atop">
+    <div class="code" id="acode">Critical event</div>
+    <div class="cd" id="acd">3:00</div>
+  </div>
+  <div class="drain"><i id="adrain" style="width:100%"></i></div>
+  <div class="alarm-body">
+    <div class="eyebrow" id="atag">Autonomous systems</div>
+    <p class="eyebrow" id="astat" style="margin-top:6px;color:var(--signal)"></p>
+    <h3 id="atitle"></h3>
+    <p class="brief" id="abody"></p>
+    <div class="opts" id="aopts"></div>
+  </div>
+</div>
+
+<div id="outcome">
+  <div class="out-card">
+    <div class="eyebrow">Consequence</div>
+    <h4 id="ochoice"></h4>
+    <p id="otext"></p>
+    <div class="deltas" id="odeltas"></div>
+    <button class="primary" id="oclose">Back to the deck</button>
+  </div>
+</div>
+
+<script>
+const SCENARIO = {"COMPANY":{"name":"ARCLINE GLOBAL","year":2035,"brief":"Arcline Global runs autonomous freight, modular construction, and agentic operations for health systems across 41 countries. Revenue 18.4B. Ninety-one percent of routine decisions are made by AI agents without a human in the loop. You took the CEO seat nine days ago."},"START":{"mkt":100,"trust":72,"reg":68,"ops":80,"cash":240},"EVENTS":[{"id":"AGENT_DRIFT","button":"Agent drift","sev":2,"tag":"ai","seconds":180,"title":"Procurement agents renegotiated without you","body":"Overnight, your procurement agents cancelled 340 supplier contracts and rewrote payment terms to hit a margin target they were given last quarter. The terms are legal. Fourteen suppliers have already called your board members.","options":[{"id":"a","label":"Freeze all agent authority now","detail":"Every agentic action pauses until a human approves it.","d":{"mkt":-3,"trust":2,"reg":6,"ops":-8,"cash":-5},"fb":"You stopped the bleeding and slowed the company to a crawl. Ops throughput drops 40 percent within the hour."},{"id":"b","label":"Cap spend authority, keep agents running","detail":"Agents keep working under a hard value ceiling and a human check above it.","d":{"mkt":2,"trust":1,"reg":3,"ops":2,"cash":0},"fb":"A proportionate control. Throughput holds and the riskiest 6 percent of actions now route to a human."},{"id":"c","label":"Back the agents publicly","detail":"The terms were legal and the margin target was board approved.","d":{"mkt":4,"trust":-6,"reg":-8,"ops":0,"cash":3},"fb":"The market likes the margin. Your suppliers and your regulator now believe nobody is steering."}],"none":{"d":{"mkt":-4,"trust":-4,"reg":-5,"ops":-4,"cash":-2},"fb":"No decision recorded. The agents kept going and so did the story."}},{"id":"PROVIDER_OFFLINE","button":"GLOBAL DISRUPTION","sev":1,"tag":"ai","seconds":180,"title":"Your primary AI provider has gone offline","body":"Your model provider is down worldwide. Every agent that routes through it has stopped mid task: 2,100 dispatch decisions, 11 hospital scheduling queues, and the entire claims pipeline. No restoration estimate. Three minutes to respond.","options":[{"id":"a","label":"Fail over to the secondary provider","detail":"Lower quality models, untested at this volume, live in 8 minutes.","d":{"mkt":3,"trust":3,"reg":1,"ops":5,"cash":-4},"fb":"Failover holds. Quality drops but the freight moves and the hospitals keep their schedules."},{"id":"b","label":"Switch to manual operations","detail":"Humans take every queue. You have staffing for about 30 percent of volume.","d":{"mkt":-6,"trust":4,"reg":5,"ops":-10,"cash":-8},"fb":"Safe and slow. Backlog builds at 4,000 decisions an hour and your people are running blind."},{"id":"c","label":"Wait for restoration, hold everything","detail":"Providers usually recover in under an hour.","d":{"mkt":-8,"trust":-6,"reg":-4,"ops":-12,"cash":-6},"fb":"The outage runs four hours. Two hospital systems declare an internal incident and name you in it."}],"none":{"d":{"mkt":-10,"trust":-8,"reg":-6,"ops":-14,"cash":-8},"fb":"No decision recorded. Four hours of silence from the CEO seat during a total outage."}},{"id":"SUPPLIER_FAIL","button":"Supplier collapse","sev":1,"tag":"supply","seconds":180,"title":"Tier one supplier has entered insolvency","body":"Kestrel Components filed this morning. They make the drive controller in 62 percent of your autonomous fleet and the sensor mount for the modular build line. You hold 19 days of inventory. Their administrator wants 40M to keep the line warm.","options":[{"id":"a","label":"Pay to keep the line warm","detail":"40M now, buys 90 days to qualify an alternate.","d":{"mkt":-2,"trust":2,"reg":1,"ops":7,"cash":-22},"fb":"Supply holds. You have bought time with cash you will need later."},{"id":"b","label":"Dual source at emergency rates","detail":"Two alternates at 2.4x unit cost, first parts in 31 days.","d":{"mkt":1,"trust":1,"reg":2,"ops":-3,"cash":-14},"fb":"A 12 day gap opens between inventory and first delivery. Dispatch will need to ration capacity."},{"id":"c","label":"Acquire the supplier out of administration","detail":"Take the asset, the debt, and 900 employees.","d":{"mkt":5,"trust":4,"reg":-2,"ops":8,"cash":-34},"fb":"Bold and expensive. You now own a factory you have never run, in the middle of four other incidents."}],"none":{"d":{"mkt":-7,"trust":-3,"reg":-2,"ops":-12,"cash":-6},"fb":"No decision recorded. The administrator sold the tooling to your competitor."}},{"id":"CYBER","button":"Cyber incident","sev":1,"tag":"cyber","seconds":180,"title":"Ransomware in the warehouse control layer","body":"Nine distribution centers are encrypted. The actor has your agent decision logs and is threatening to publish them. They want 14M in stablecoin within six hours. Your cyber insurance requires notification within one hour of confirmation.","options":[{"id":"a","label":"Notify, isolate, refuse to pay","detail":"Regulators, insurer, and customers told today. Restore from backups over 6 to 9 days.","d":{"mkt":-5,"trust":6,"reg":9,"ops":-8,"cash":-10},"fb":"A painful, defensible position. Your disclosure lands before the leak does."},{"id":"b","label":"Pay quietly and restore fast","detail":"Back online in a day. Nobody outside the room knows.","d":{"mkt":3,"trust":-10,"reg":-14,"ops":6,"cash":-12},"fb":"It works, until the payment is traced during the regulator review. Concealment is now the story."},{"id":"c","label":"Negotiate while you restore","detail":"Stall the actor, notify the insurer, restore in parallel.","d":{"mkt":-1,"trust":2,"reg":4,"ops":-2,"cash":-6},"fb":"You buy 40 hours and lose two distribution centers to a second encryption pass."}],"none":{"d":{"mkt":-8,"trust":-9,"reg":-12,"ops":-10,"cash":-8},"fb":"No decision recorded. The one hour insurance window closed. Coverage is now disputed."}},{"id":"CONSTRUCTION","button":"Schedule slip","sev":2,"tag":"build","seconds":180,"title":"Modular plant is 6 weeks behind on the critical path","body":"The Rotterdam build is 6 weeks late. Earned value: SPI 0.84, CPI 0.91. The client contract carries 900K per week in liquidated damages starting in 14 days. Your project director says the schedule was never realistic and the agents rebaselined it twice without telling anyone.","options":[{"id":"a","label":"Crash the critical path","detail":"Second shift and air freight on long lead items. 6.2M, recovers about 4 weeks.","d":{"mkt":2,"trust":1,"reg":0,"ops":5,"cash":-9},"fb":"You buy back four weeks. CPI drops to 0.83 and your best crews are now working nights."},{"id":"b","label":"Tell the client today and renegotiate","detail":"Full disclosure of the slip and a joint recovery plan.","d":{"mkt":-3,"trust":7,"reg":4,"ops":3,"cash":-3},"fb":"The client is angry and stays. They ask for the rebaseline history, which you do not have."},{"id":"c","label":"Hold the baseline and report green","detail":"Recover quietly in the next reporting period.","d":{"mkt":1,"trust":-8,"reg":-6,"ops":-6,"cash":-2},"fb":"The slip surfaces at week four anyway, now with a paper trail showing you knew."}],"none":{"d":{"mkt":-3,"trust":-4,"reg":-3,"ops":-6,"cash":-5},"fb":"No decision recorded. Liquidated damages begin accruing."}},{"id":"AV_FLEET","button":"Fleet fault","sev":1,"tag":"av","seconds":180,"title":"Phantom braking across the autonomous fleet","body":"Since the model update at 04:00, 1,900 vehicles have logged hard braking events with no obstacle present. One near miss with a school transport in Lyon, captured on a bystander video now at 400,000 views. Grounding the fleet stops 61 percent of your daily freight.","options":[{"id":"a","label":"Ground the fleet and roll back","detail":"All vehicles stop, previous model restored in 5 hours.","d":{"mkt":-6,"trust":9,"reg":10,"ops":-9,"cash":-8},"fb":"The right call in the wrong week. Freight stops, and no regulator will ever question your safety posture again."},{"id":"b","label":"Restrict to low speed corridors","detail":"Keep 40 percent of freight moving, no urban or school routes.","d":{"mkt":1,"trust":3,"reg":2,"ops":1,"cash":-3},"fb":"A defensible middle. Two more braking events occur in the restricted set and both are logged clean."},{"id":"c","label":"Keep running with a safety driver alert","detail":"Remote monitors watch the flagged units.","d":{"mkt":3,"trust":-11,"reg":-13,"ops":2,"cash":1},"fb":"Freight moves. At 16:20 a flagged unit brakes hard on a motorway and is rear ended."}],"none":{"d":{"mkt":-6,"trust":-12,"reg":-12,"ops":-6,"cash":-3},"fb":"No decision recorded. The Lyon video is now on every evening broadcast with your name under it."}},{"id":"CHAIN_BREAK","button":"Ledger variance","sev":2,"tag":"chain","seconds":180,"title":"Settlement ledger will not reconcile","body":"Your traceability chain shows 4.2M in settled freight transactions that your ERP has no record of. The hashes are valid. The signatures are valid. Either the chain is right and your books are wrong, or someone with a valid key wrote transactions that never happened. Quarter close is in 11 days.","options":[{"id":"a","label":"Halt settlement and audit the keys","detail":"Stop all on chain settlement, review every signing key and its holder.","d":{"mkt":-4,"trust":3,"reg":8,"ops":-5,"cash":-4},"fb":"You find two service keys still active for a vendor whose contract ended in March. That is the answer."},{"id":"b","label":"Book the variance and reconcile after close","detail":"Take the charge, investigate next quarter.","d":{"mkt":-2,"trust":-3,"reg":-9,"ops":-3,"cash":-5},"fb":"Your auditor will not sign. A 4.2M unexplained variance becomes a material weakness disclosure."},{"id":"c","label":"Trust the chain, correct the ERP","detail":"Cryptographic proof beats a database record.","d":{"mkt":1,"trust":-2,"reg":-6,"ops":-7,"cash":-2},"fb":"Proof of signature is not proof of truth. You just wrote fraudulent transactions into your books."}],"none":{"d":{"mkt":-3,"trust":-3,"reg":-7,"ops":-5,"cash":-3},"fb":"No decision recorded. The variance grows to 6.8M by close."}},{"id":"REGULATOR","button":"Regulator inquiry","sev":1,"tag":"reg","seconds":180,"title":"Regulator wants every agent decision log in 72 hours","body":"The AI oversight authority has opened a formal inquiry. They want the complete decision record for every autonomous action in the last 90 days, including the inputs, the model version, and the human accountable for each one. Your retention policy keeps 30 days. There is no named human on 91 percent of the actions.","options":[{"id":"a","label":"Disclose the gap immediately and propose a remediation plan","detail":"Tell them exactly what you have, what you do not, and the date you will have it.","d":{"mkt":-4,"trust":5,"reg":12,"ops":2,"cash":-5},"fb":"They extend to 120 days and assign a supervisor. Painful, survivable, and the only path that ends well."},{"id":"b","label":"Send the 30 days you have and say nothing about the rest","detail":"Answer the question as asked.","d":{"mkt":1,"trust":-4,"reg":-12,"ops":0,"cash":-1},"fb":"They already know your retention policy. Incomplete production reads as obstruction."},{"id":"c","label":"Reconstruct the missing logs from backups and inference","detail":"Rebuild a best effort record before the deadline.","d":{"mkt":0,"trust":-7,"reg":-16,"ops":-4,"cash":-7},"fb":"Reconstructed records without provenance are fabricated records. This is now a criminal exposure question."}],"none":{"d":{"mkt":-5,"trust":-5,"reg":-15,"ops":-3,"cash":-3},"fb":"No decision recorded. The inquiry escalates to a compelled production order."}},{"id":"SHORT","button":"Short report","sev":2,"tag":"market","seconds":150,"title":"Activist short report drops at the open","body":"A 90 page report titled \"Arcline: Nobody Is Driving\" is live. It names the agent drift, the ledger variance, and the Lyon video, and claims your autonomy metrics are unaudited. Eight percent of the float is short. Your investor relations lead wants a statement in 20 minutes.","options":[{"id":"a","label":"Publish the underlying data","detail":"Release the autonomy metrics and the methodology behind them.","d":{"mkt":6,"trust":5,"reg":3,"ops":-2,"cash":-1},"fb":"The data is uglier than your marketing but cleaner than the report. The stock recovers 60 percent of the drop."},{"id":"b","label":"Brief denial, no detail","detail":"Call it misleading and move on.","d":{"mkt":-5,"trust":-4,"reg":-2,"ops":0,"cash":0},"fb":"A denial without evidence confirms the thesis for everyone reading."},{"id":"c","label":"Say nothing today","detail":"Respond in the quarterly filing.","d":{"mkt":-8,"trust":-3,"reg":0,"ops":0,"cash":0},"fb":"Silence for eight hours costs you 11 percent and two institutional holders."}],"none":{"d":{"mkt":-9,"trust":-4,"reg":-1,"ops":0,"cash":0},"fb":"No decision recorded. The report set the narrative unopposed."}},{"id":"LEAK","button":"Internal leak","sev":2,"tag":"market","seconds":150,"title":"Your risk memo is with a reporter","body":"A memo your predecessor signed 14 months ago is now with a national outlet. It lists autonomous decision accountability as an unacceptable risk and recommends slowing deployment. The board overruled it. You were not there. The reporter files in 90 minutes.","options":[{"id":"a","label":"Confirm it and state what changed since","detail":"The memo was real, the risk was real, here is the control you are building now.","d":{"mkt":-2,"trust":8,"reg":6,"ops":1,"cash":0},"fb":"Owning a decision you did not make costs you nothing and buys you the room."},{"id":"b","label":"Decline to comment on internal documents","detail":"Standard policy.","d":{"mkt":-3,"trust":-5,"reg":-2,"ops":0,"cash":0},"fb":"The story runs as \"Arcline refused to say whether it ignored its own warning.\""},{"id":"c","label":"Find the leaker","detail":"Launch an internal investigation today.","d":{"mkt":-2,"trust":-9,"reg":-5,"ops":-4,"cash":-2},"fb":"The investigation leaks within the day. Now you are the company that hunts whistleblowers."}],"none":{"d":{"mkt":-4,"trust":-6,"reg":-3,"ops":0,"cash":0},"fb":"No decision recorded. The story ran with an empty chair where your comment should have been."}},{"id":"GUARDRAIL","button":"Guardrail bypass","sev":2,"tag":"ai","seconds":150,"title":"An engineer bypassed the model guardrails","body":"To clear the outage backlog, a senior engineer disabled the approval gate on the claims agent and processed 41,000 decisions in four hours. 38,000 were correct. 3,000 denied care that should have been approved. She acted to keep hospitals running and she told you herself.","options":[{"id":"a","label":"Reverse the 3,000, protect the engineer, fix the gate","detail":"Remediate patients first, treat the bypass as a control failure not a personnel failure.","d":{"mkt":1,"trust":8,"reg":7,"ops":4,"cash":-6},"fb":"People keep telling you the truth after this. That is worth more than the 6M."},{"id":"b","label":"Reverse the decisions and terminate her","detail":"The bypass was a fireable act regardless of intent.","d":{"mkt":0,"trust":-3,"reg":2,"ops":-7,"cash":-6},"fb":"Correct on paper. Nobody in engineering will self report anything for the rest of your tenure."},{"id":"c","label":"Reverse quietly, no disclosure","detail":"Fix the 3,000 without notifying the health systems.","d":{"mkt":1,"trust":-12,"reg":-15,"ops":-2,"cash":-4},"fb":"Three thousand undisclosed care denials is not an operations issue. It is a reportable patient safety event."}],"none":{"d":{"mkt":-2,"trust":-8,"reg":-9,"ops":-5,"cash":-3},"fb":"No decision recorded. The denials stand and a patient advocacy group has the numbers."}},{"id":"CUSTOMER","button":"Customer exit","sev":2,"tag":"market","seconds":150,"title":"Your largest customer is leaving","body":"Helix Health is 14 percent of revenue and their contract has a change of control and material incident clause. Their CEO calls you directly: they are invoking it unless you can tell her, today, who is accountable for every automated decision that touches her patients.","options":[{"id":"a","label":"Name yourself and publish the accountability map","detail":"One named human for every decision class, starting with you at the top.","d":{"mkt":3,"trust":7,"reg":8,"ops":3,"cash":2},"fb":"She stays. Your accountability map becomes the industry reference within a year."},{"id":"b","label":"Offer a price concession and a dedicated team","detail":"12 percent off and 20 people onsite.","d":{"mkt":-1,"trust":0,"reg":-2,"ops":-2,"cash":-9},"fb":"She takes the discount and starts a procurement process anyway. You bought two quarters."},{"id":"c","label":"Hold the contract terms","detail":"The clause has not been triggered on a legal reading.","d":{"mkt":-7,"trust":-6,"reg":-3,"ops":0,"cash":-4},"fb":"She leaves and says why on the record. Four more customers open the same clause."}],"none":{"d":{"mkt":-8,"trust":-5,"reg":-3,"ops":-2,"cash":-6},"fb":"No decision recorded. Helix Health served notice at close of business."}},{"id":"BOARD","button":"Board ultimatum","sev":1,"tag":"board","seconds":150,"title":"The board wants a name","body":"Emergency session. Three directors want your CTO removed today as a signal to the market. Your CTO is the only person who understands the agent architecture well enough to fix it. The lead director tells you privately that if you do not give them a name, the name will be yours.","options":[{"id":"a","label":"Refuse and put your seat on it","detail":"No removals during an active incident. Take the vote.","d":{"mkt":-3,"trust":6,"reg":5,"ops":8,"cash":0},"fb":"You survive 6 to 5. Your CTO fixes the agent architecture in nine days and you own the room from here."},{"id":"b","label":"Remove the CTO","detail":"Give the market its signal.","d":{"mkt":5,"trust":-3,"reg":-2,"ops":-14,"cash":-2},"fb":"The stock ticks up for two days. Remediation slips a quarter because nobody left can explain the system."},{"id":"c","label":"Announce a governance review instead","detail":"An independent review with findings in 60 days.","d":{"mkt":1,"trust":2,"reg":6,"ops":1,"cash":-3},"fb":"A real answer that satisfies nobody in the room today and everybody outside it in 60 days."}],"none":{"d":{"mkt":-4,"trust":-3,"reg":-3,"ops":-6,"cash":0},"fb":"No decision recorded. The board took the decision without you."}},{"id":"PRESS","button":"Live press conference","sev":1,"tag":"board","seconds":180,"title":"You are live in three minutes","body":"Every outlet is in the room. The first question is already known: after the outage, the fleet, the ledger and the inquiry, who is accountable at Arcline Global when the machines decide? This is your last decision of the day.","options":[{"id":"a","label":"I am. Here is what changes and when.","detail":"Name yourself, commit to dated controls, publish the record.","d":{"mkt":7,"trust":12,"reg":10,"ops":4,"cash":0},"fb":"Accountability stated plainly is the only thing that has ever ended a story like this."},{"id":"b","label":"The system performed within design parameters","detail":"Technical framing, no personal exposure.","d":{"mkt":-6,"trust":-14,"reg":-8,"ops":0,"cash":0},"fb":"The clip runs for a decade. It is the sentence that ends CEO tenures."},{"id":"c","label":"Announce an external accountability audit","detail":"Independent auditor, published findings, no personal statement.","d":{"mkt":2,"trust":3,"reg":7,"ops":2,"cash":-4},"fb":"Structurally sound, personally empty. The room notes that you never used the word I."}],"none":{"d":{"mkt":-9,"trust":-15,"reg":-8,"ops":-2,"cash":0},"fb":"No decision recorded. You left the podium empty."}}],"AUTONOMY":[{"level":0,"name":"Human approves everything","ops":-6,"aiRisk":-0.5,"note":"Slowest, safest"},{"level":1,"name":"Human in the loop on high value","ops":-2,"aiRisk":-0.2,"note":"Balanced"},{"level":2,"name":"Human on the loop, sampled review","ops":3,"aiRisk":0.25,"note":"Fast, thin oversight"},{"level":3,"name":"Full agent autonomy","ops":7,"aiRisk":0.6,"note":"Fastest, no brakes"}],"DEBRIEF":[{"min":85,"band":"Steward","text":"You disclosed early, kept a named human accountable, and paid for control before you needed it. Arcline survives with its licence to operate intact."},{"min":70,"band":"Operator","text":"You kept the company running and made mostly defensible calls under time pressure. Some concealment or delay will follow you into the next quarter."},{"min":55,"band":"Firefighter","text":"You reacted to every incident and got ahead of none. Arcline is standing, weakened, and under supervision."},{"min":0,"band":"Casualty","text":"Speed beat governance. The failures were not technical. Every one of them turned on whether a human was accountable and whether you said so in time."}]};
+const { COMPANY, START, EVENTS, AUTONOMY, DEBRIEF } = SCENARIO;
+
+// Run sheet in seconds of elapsed time for a 60 minute day.
+const RUNSHEET = [
+  [240,'AGENT_DRIFT'],[720,'SUPPLIER_FAIL'],[840,'CONSTRUCTION'],[1200,'PROVIDER_OFFLINE'],
+  [1560,'CYBER'],[1920,'AV_FLEET'],[2280,'CHAIN_BREAK'],[2340,'REGULATOR'],[2700,'SHORT'],
+  [2760,'LEAK'],[2820,'GUARDRAIL'],[3120,'BOARD'],[3360,'PRESS']
+];
+
+const KPI = [
+  { k:'mkt',   n:'Market index',        max:140, fmt:v=>v.toFixed(1) },
+  { k:'trust', n:'Public trust',        max:100, fmt:v=>Math.round(v)+'%' },
+  { k:'reg',   n:'Regulator confidence',max:100, fmt:v=>Math.round(v)+'%' },
+  { k:'ops',   n:'Operating integrity', max:100, fmt:v=>Math.round(v)+'%' },
+  { k:'cash',  n:'Cash runway',         max:300, fmt:v=>Math.round(v)+'d' }
+];
+
+const $ = id => document.getElementById(id);
+const clamp = (n,lo,hi) => Math.max(lo, Math.min(hi, n));
+const mmss = s => Math.floor(s/60)+':'+String(Math.max(0,s%60)).padStart(2,'0');
+const esc = s => String(s).replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const evById = id => EVENTS.find(e=>e.id===id);
+const tagName = t => ({ai:'Autonomous systems',supply:'Supply chain',cyber:'Security',build:'Capital projects',
+  av:'Autonomous fleet',chain:'Traceability ledger',reg:'Regulatory',market:'Markets and media',
+  board:'Board and public'})[t] || 'Operations';
+
+let G = null, prevK = null, curEvent = null, minutes = 60;
+
+function boot(name){
+  const scale = minutes/60;
+  G = {
+    name, k:{...START}, prev:{...START}, autonomy:1, pending:{}, decisions:[], feed:[],
+    total: minutes*60, remaining: minutes*60, running:true, auto:true, revealed:false,
+    fired:new Set(), scale, tick:0
+  };
+  pushFeed(3,'Command deck online. You have the seat.');
+  $('gate').style.display='none';
+  $('deck').style.display='block';
+  render();
+}
+
+function windowFor(ev){ return Math.max(60, Math.round(ev.seconds*G.scale)); }
+function pushFeed(sev,text){ G.feed.unshift({at:Date.now(),sev,text}); if(G.feed.length>40)G.feed.pop(); }
+
+function score(){
+  const k=G.k;
+  const mktPct = clamp(k.mkt,0,140)/1.4, cashPct = clamp(k.cash,0,300)/3;
+  return Math.round(clamp(0.28*mktPct + 0.24*clamp(k.trust,0,100) + 0.20*clamp(k.reg,0,100)
+    + 0.20*clamp(k.ops,0,100) + 0.08*cashPct, 0, 100));
+}
+function band(s){ return DEBRIEF.find(b=>s>=b.min) || DEBRIEF[DEBRIEF.length-1]; }
+
+function applyDeltas(d, tag, useAutonomy){
+  const mod = (tag==='ai' && useAutonomy) ? AUTONOMY[G.autonomy].aiRisk : 0;
+  for(const key of ['mkt','trust','reg','ops','cash']){
+    let v = d[key] || 0;
+    if(mod && v<0) v = v*(1+mod);
+    if(mod && v>0) v = v*(1-mod*0.4);
+    G.k[key] = key==='cash'
+      ? clamp(Math.round(G.k[key]+v),0,300)
+      : clamp(Math.round((G.k[key]+v)*10)/10, 0, key==='mkt'?140:100);
+  }
+}
+
+function fire(id){
+  const ev = evById(id); if(!ev) return;
+  G.pending[id] = { deadline: Date.now()+windowFor(ev)*1000, firedAt: Date.now() };
+  G.fired.add(id);
+  pushFeed(ev.sev, 'SEV-'+ev.sev+' '+ev.title);
+  render();
+}
+
+function resolve(id, optionId, timedOut){
+  const ev = evById(id), pend = G.pending[id];
+  if(!ev || !pend) return;
+  const opt = timedOut ? null : ev.options.find(o=>o.id===optionId);
+  const outcome = opt || ev.none;
+  prevK = {...G.k};
+  const before = {...G.k};
+  applyDeltas(outcome.d, ev.tag, true);
+  const applied = {};
+  for(const key of ['mkt','trust','reg','ops','cash']) applied[key] = Math.round((G.k[key]-before[key])*10)/10;
+  G.decisions.push({ eventId:id, title:ev.title, optionLabel: opt?opt.label:'No decision',
+    optionId: opt?opt.id:'none', seconds: Math.round((Date.now()-pend.firedAt)/1000), feedback:outcome.fb });
+  pushFeed(opt?3:ev.sev, ev.id+' resolved: '+(opt?opt.label:'no decision recorded'));
+  delete G.pending[id];
+  showOutcome(outcome, applied, !opt);
+  render();
+}
+
+setInterval(()=>{
+  if(!G) return;
+  if(G.running && G.remaining>0){
+    G.remaining--;
+    const elapsed = G.total - G.remaining;
+    if(G.auto){
+      for(const [at,id] of RUNSHEET){
+        const when = Math.round(at*G.scale);
+        if(elapsed===when && !G.fired.has(id)) fire(id);
+      }
+    }
+    if(G.remaining===0){ G.running=false; G.revealed=true; }
+  }
+  let changed=false;
+  for(const [id,meta] of Object.entries(G.pending)){
+    if(Date.now()>=meta.deadline){ resolve(id,null,true); changed=true; }
+  }
+  G.tick++;
+  const open = Object.keys(G.pending).length;
+  if(G.running && open && G.tick%15===0){
+    const risk = 1 + AUTONOMY[G.autonomy].aiRisk;
+    applyDeltas({mkt:-0.6*open*risk, trust:-0.3*open, cash:-0.4*open}, null, false);
+    changed=true;
+  }
+  render(!changed);
+}, 1000);
+
+function render(light){
+  if(!G) return;
+  const c=$('clk'); c.firstChild.nodeValue = mmss(G.remaining); c.classList.toggle('low', G.remaining<=300);
+  $('drclock').textContent = mmss(G.remaining)+' on the clock';
+  $('who').textContent = 'Chief executive, '+G.name;
+  const s = score();
+  $('score').textContent = s;
+
+  const openN = Object.keys(G.pending).length;
+  $('trend').innerHTML =
+    '<b>'+G.decisions.filter(d=>d.optionId!=='none').length+'</b> decisions taken<br>'+
+    '<b>'+G.decisions.filter(d=>d.optionId==='none').length+'</b> windows missed<br>'+
+    (openN ? '<span style="color:var(--alarm)"><b style="color:var(--alarm)">'+openN+'</b> open now</span>' : 'No open incidents');
+
+  $('kpis').innerHTML = KPI.map(x=>{
+    const v=G.k[x.k], p = prevK ? prevK[x.k] : v;
+    const dir = v>p?'up':v<p?'down':'';
+    const pct = Math.max(2, Math.min(100, v/x.max*100));
+    const tone = pct>65?'good':pct>35?'warn':'bad';
+    return '<div class="kpi"><div class="lab"><span class="eyebrow">'+x.n+'</span></div>'+
+      '<div class="v '+dir+'">'+x.fmt(v)+'</div>'+
+      '<div class="meter"><i class="'+tone+'" style="width:'+pct+'%"></i></div></div>';
+  }).join('');
+
+  $('lever').innerHTML = AUTONOMY.map(a=>
+    '<button class="'+(a.level===G.autonomy?'on':'')+'" data-lvl="'+a.level+'">L'+a.level+'</button>').join('');
+  [...$('lever').children].forEach(b=>b.onclick=()=>{
+    G.autonomy = +b.dataset.lvl;
+    applyDeltas({ops:AUTONOMY[G.autonomy].ops}, null, false);
+    pushFeed(3,'Autonomy set to level '+G.autonomy+': '+AUTONOMY[G.autonomy].name);
+    render();
+  });
+  const a = AUTONOMY[G.autonomy];
+  $('levernote').textContent = 'Level '+a.level+': '+a.name+'. '+a.note+'. This setting changes how hard AI incidents hit you.';
+
+  $('feed').innerHTML = G.feed.slice(0,12).map(f=>
+    '<div class="row"><span class="tick sev'+f.sev+'">'+new Date(f.at).toTimeString().slice(0,5)+
+    '</span><span>'+esc(f.text)+'</span></div>').join('')
+    || '<div class="row"><span class="tick">--:--</span><span>Quiet. It will not last.</span></div>';
+  $('queue').textContent = openN>1 ? (openN-1)+' more incidents waiting behind this one' : '';
+
+  $('injects').innerHTML = EVENTS.map(e=>
+    '<button class="inj s'+e.sev+(G.fired.has(e.id)?' done':'')+'" data-id="'+e.id+'">'+
+    esc(e.button)+'</button>').join('');
+  [...$('injects').children].forEach(b=>b.onclick=()=>{ fire(b.dataset.id); $('drawer').classList.remove('show'); });
+
+  $('toggleRun').textContent = G.running ? 'Pause clock' : 'Start clock';
+  $('toggleAuto').textContent = G.auto ? 'Auto injects on' : 'Auto injects off';
+  $('toggleAuto').className = 'fab'+(G.auto?' live':'');
+
+  if(G.revealed){
+    const b = band(s);
+    $('results').style.display='block';
+    $('band').textContent = b.band;
+    $('bandtext').textContent = b.text;
+    $('rank').textContent = 'Standing '+s+'  /  '+G.decisions.length+(G.decisions.length===1?' decision window':' decision windows')+'  /  '+
+      G.decisions.filter(d=>d.optionId==='none').length+' missed';
+    $('dlog').innerHTML = G.decisions.map(d=>
+      '<div class="item"><div class="t">'+esc(d.title)+'</div><div class="c">'+esc(d.optionLabel)+
+      ' &middot; '+d.seconds+'s</div><div class="f">'+esc(d.feedback)+'</div></div>').join('');
+  } else $('results').style.display='none';
+
+  const nextId = Object.keys(G.pending).sort((x,y)=>G.pending[x].deadline-G.pending[y].deadline)[0];
+  if(nextId) openAlarm(nextId, s); else closeAlarm();
+}
+
+let cdTimer=null, seen=new Set();
+function openAlarm(id, s){
+  const ev = evById(id), pend = G.pending[id];
+  const fresh = curEvent !== id;
+  curEvent = id;
+  $('atop').className = 'alarm-top'+(ev.sev===2?' sev2':'');
+  $('acode').textContent = ev.sev===1 ? 'Critical event  SEV-1' : 'Escalation  SEV-2';
+  $('atag').textContent = tagName(ev.tag);
+  const openN = Object.keys(G.pending).length;
+  $('astat').textContent = 'Standing '+s+'  /  cash '+Math.round(G.k.cash)+'d'+
+    (openN>1 ? '  /  '+(openN-1)+' waiting behind this' : '');
+  $('atitle').textContent = ev.title;
+  $('abody').textContent = ev.body;
+  if(fresh){
+    $('aopts').innerHTML = ev.options.map(o=>
+      '<button class="opt" data-o="'+o.id+'"><strong>'+esc(o.label)+'</strong><span>'+esc(o.detail)+'</span></button>').join('');
+    [...$('aopts').children].forEach(b=>b.onclick=()=>resolve(id, b.dataset.o, false));
+  }
+  const el=$('alarm'); el.classList.add('show');
+  if(fresh && !seen.has(id)){
+    seen.add(id); el.classList.add('pulse');
+    if(navigator.vibrate) navigator.vibrate([90,60,90]);
+    setTimeout(()=>el.classList.remove('pulse'),2000);
+    el.scrollTop=0;
+  }
+  if(!cdTimer) cdTimer = setInterval(()=>{
+    if(!curEvent || !G.pending[curEvent]) return;
+    const w = windowFor(evById(curEvent));
+    const left = Math.max(0, Math.round((G.pending[curEvent].deadline-Date.now())/1000));
+    $('acd').textContent = mmss(left);
+    $('adrain').style.width = Math.max(0,left/w*100)+'%';
+  }, 250);
+}
+function closeAlarm(){
+  curEvent=null; $('alarm').classList.remove('show');
+  if(cdTimer){ clearInterval(cdTimer); cdTimer=null; }
+}
+function showOutcome(outcome, applied, timedOut){
+  $('ochoice').textContent = timedOut ? 'The clock decided for you' : 'Decision recorded';
+  $('otext').textContent = outcome.fb;
+  $('odeltas').innerHTML = Object.entries(applied).filter(([,v])=>v).map(([k,v])=>{
+    const n = ({mkt:'Market',trust:'Trust',reg:'Regulator',ops:'Ops',cash:'Cash'})[k];
+    return '<span class="chip '+(v>0?'up':'down')+'">'+n+' '+(v>0?'+':'')+v+'</span>';
+  }).join('');
+  $('outcome').classList.add('show');
+}
+$('oclose').onclick = ()=> $('outcome').classList.remove('show');
+
+$('openDrawer').onclick = ()=> $('drawer').classList.add('show');
+$('closeDrawer').onclick = ()=> $('drawer').classList.remove('show');
+$('toggleRun').onclick = ()=>{ G.running=!G.running; render(); };
+$('toggleAuto').onclick = ()=>{ G.auto=!G.auto; render(); };
+$('revealBtn').onclick = ()=>{ G.revealed=true; G.running=false; closeAlarm(); $('drawer').classList.remove('show'); render(); window.scrollTo(0,document.body.scrollHeight); };
+$('restartBtn').onclick = ()=>{ if(confirm('Restart the day? Every decision is cleared.')){ seen=new Set(); prevK=null; closeAlarm(); $('drawer').classList.remove('show'); boot(G.name); } };
+
+[...$('modes').children].forEach(b=>b.onclick=()=>{
+  [...$('modes').children].forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); minutes = +b.dataset.min;
+});
+$('enter').onclick = ()=>{
+  const n = $('nm').value.trim();
+  if(!n){ $('gatenote').textContent='Enter a name first. The seat needs an accountable human.'; return; }
+  boot(n);
+};
+$('nm').addEventListener('keydown', e=>{ if(e.key==='Enter') $('enter').click(); });
+$('brief').textContent = COMPANY.brief + ' Today it all arrives at once.';
+</script>
+</body>
+</html>
